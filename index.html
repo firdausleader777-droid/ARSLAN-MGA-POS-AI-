@@ -211,15 +211,6 @@
   .printer-preview-box.struk-58{ max-width:320px; }
   .printer-preview-box.struk-80{ max-width:420px; }
   .printer-rows{ display:flex; justify-content:space-between; font-size:11px; color:var(--plum); }
-  .printer-connection-card{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; margin:0 0 14px; border:1px solid var(--line); border-radius:10px; background:#fbf8f6; }
-  .printer-connection-state{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--plum); }
-  .printer-connection-dot{ width:9px; height:9px; border-radius:50%; background:var(--text-dim); box-shadow:0 0 0 3px rgba(138,124,130,.14); }
-  .printer-connection-dot.online{ background:var(--sage); box-shadow:0 0 0 3px rgba(92,131,104,.16); }
-  .printer-connection-help{ color:var(--text-dim); font-size:10px; line-height:1.45; margin-top:4px; }
-  .printer-action-row{ display:flex; gap:8px; margin-top:10px; }
-  .printer-action-row button{ flex:1; min-height:38px; padding:8px 10px; border:1px solid var(--line); border-radius:7px; cursor:pointer; font-size:12px; font-weight:700; }
-  .printer-action-primary{ background:var(--plum); color:var(--white); border-color:var(--plum) !important; }
-  .printer-action-secondary{ background:var(--white); color:var(--plum); }
   .brand__logo--fallback{ display:grid; place-items:center; width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#f4e7e9,#f9d7dd); color:var(--plum); font-weight:800; font-size:18px; }
   .login-logo__img{ width:52px; height:52px; border-radius:14px; object-fit:cover; background:var(--rose-soft); border:1px solid rgba(255,255,255,0.2); }
   .login-logo__mark{ width:40px; height:40px; display:grid; place-items:center; border-radius:10px; color:var(--plum); background:var(--rose-soft); font-family:'Inter',sans-serif; font-weight:800; }
@@ -646,14 +637,6 @@
   <div style="max-width:700px; background:var(--white); padding:20px; border-radius:10px; border:1px solid var(--line);">
     <h3 style="margin-bottom:12px; color:var(--plum);">🖨️ Pengaturan Printer POS Thermal</h3>
 
-    <div class="printer-connection-card">
-      <div>
-        <div class="printer-connection-state"><span id="printerConnectionDot" class="printer-connection-dot"></span><span id="printerConnectionStatus">Belum terhubung</span></div>
-        <div id="printerConnectionHelp" class="printer-connection-help">Simpan konfigurasi, lalu hubungkan printer dari browser atau gunakan cetak sistem.</div>
-      </div>
-      <button id="btnConnectPrinter" class="printer-action-primary" onclick="hubungkanPrinter()" style="padding:8px 12px; border:0; border-radius:7px; cursor:pointer; font-size:11px; font-weight:700;">Hubungkan</button>
-    </div>
-
     <div class="printer-config-grid">
       <div class="field">
         <label>Jenis Printer</label>
@@ -680,20 +663,6 @@
       <div class="field">
         <label>Alamat / IP Printer</label>
         <input type="text" id="cfgPrinterAddress" placeholder="192.168.1.50 / COM3 / BT-Printer">
-      </div>
-      <div class="field" id="printerPortField">
-        <label>Port Network</label>
-        <input type="number" id="cfgPrinterPort" value="9100" min="1" max="65535" placeholder="9100">
-      </div>
-      <div class="field" id="printerBaudField">
-        <label>Baud Rate Serial</label>
-        <select id="cfgPrinterBaud">
-          <option value="9600">9600</option>
-          <option value="19200">19200</option>
-          <option value="38400">38400</option>
-          <option value="57600">57600</option>
-          <option value="115200">115200</option>
-        </select>
       </div>
       <div class="field">
         <label>Nama Toko</label>
@@ -753,11 +722,6 @@
       <label><input type="checkbox" id="cfgShowFooter" checked> Tampilkan Footer</label>
     </div>
 
-    <div class="printer-action-row">
-      <button class="printer-action-secondary" onclick="simpanSettingPrinter(false)">Simpan Konfigurasi</button>
-      <button class="printer-action-secondary" onclick="cekStatusPrinter()">Cek Status</button>
-    </div>
-
     <div class="printer-preview">
       <strong style="font-size:12px; color:var(--plum);">Preview Desain Struk</strong>
       <div id="printerPreviewBox" class="printer-preview-box struk-58">
@@ -772,7 +736,7 @@
     </div>
 
     <div style="display:flex; gap:8px; margin-top:14px;">
-      <button class="btn-simpan" onclick="simpanSettingPrinter(false)" style="flex:1; padding:9px; border:none; border-radius:6px; cursor:pointer;">💾 Simpan Konfigurasi Printer</button>
+      <button class="btn-simpan" onclick="simpanSettingPrinter()" style="flex:1; padding:9px; border:none; border-radius:6px; cursor:pointer;">💾 Simpan Konfigurasi Printer</button>
       <button class="btn-batal" onclick="testPrintPos()" style="flex:1; padding:9px; border:1px solid var(--line); border-radius:6px; cursor:pointer;">🧪 Test Print</button>
     </div>
   </div>
@@ -1004,8 +968,6 @@ function getPrinterConfig() {
     printerConnection: "usb",
     printerName: "",
     printerAddress: "",
-    printerPort: 9100,
-    printerBaud: 9600,
     namaToko: "ARSLAN POS",
     alamatToko: "Toko Kosmetik & Kecantikan",
     logoUrl: "",
@@ -1086,75 +1048,6 @@ function testPrintPos() {
   tampilkanStruk(dummyTx);
 }
 
-function setPrinterConnectionStatus(online, message) {
-  const dot = document.getElementById('printerConnectionDot');
-  const status = document.getElementById('printerConnectionStatus');
-  const help = document.getElementById('printerConnectionHelp');
-  const button = document.getElementById('btnConnectPrinter');
-  if (dot) dot.classList.toggle('online', online);
-  if (status) status.textContent = message;
-  if (help) help.textContent = online ? 'Printer siap digunakan untuk test print atau cetak struk.' : 'Simpan konfigurasi, lalu hubungkan printer dari browser atau gunakan cetak sistem.';
-  if (button) button.textContent = online ? 'Putuskan' : 'Hubungkan';
-}
-
-function updatePrinterConnectionFields() {
-  const method = document.getElementById('cfgPrinterConnection')?.value || 'usb';
-  const portField = document.getElementById('printerPortField');
-  const baudField = document.getElementById('printerBaudField');
-  if (portField) portField.style.display = ['wifi', 'pos58', 'pos80'].includes(method) ? 'block' : 'none';
-  if (baudField) baudField.style.display = method === 'serial' ? 'block' : 'none';
-}
-
-async function hubungkanPrinter() {
-  const method = document.getElementById('cfgPrinterConnection')?.value || 'usb';
-  simpanSettingPrinter(false);
-  const cfg = getPrinterConfig();
-  if (document.getElementById('btnConnectPrinter')?.textContent === 'Putuskan') {
-    if (window.printerSerialPort) {
-      try { await window.printerSerialPort.close(); } catch (error) { console.warn(error); }
-      window.printerSerialPort = null;
-    }
-    setPrinterConnectionStatus(false, 'Printer diputuskan');
-    return;
-  }
-
-  if (method === 'serial') {
-    if (!('serial' in navigator)) {
-      setPrinterConnectionStatus(false, 'Web Serial tidak didukung');
-      return alert('Browser ini belum mendukung Web Serial. Gunakan Chrome atau Edge melalui HTTPS/localhost.');
-    }
-    try {
-      const port = await navigator.serial.requestPort();
-      await port.open({ baudRate: Number(cfg.printerBaud) || 9600 });
-      window.printerSerialPort = port;
-      setPrinterConnectionStatus(true, 'Serial printer terhubung');
-    } catch (error) {
-      setPrinterConnectionStatus(false, 'Gagal menghubungkan printer');
-      if (error.name !== 'NotFoundError') alert('Printer serial tidak dapat dihubungkan.');
-    }
-    return;
-  }
-
-  if (['wifi', 'pos58', 'pos80'].includes(method) && !cfg.printerAddress) {
-    setPrinterConnectionStatus(false, 'Alamat printer belum diisi');
-    return alert('Isi alamat/IP printer terlebih dahulu.');
-  }
-
-  setPrinterConnectionStatus(true, method === 'usb' ? 'USB siap melalui driver sistem' : 'Konfigurasi printer siap');
-}
-
-function cekStatusPrinter() {
-  const method = document.getElementById('cfgPrinterConnection')?.value || 'usb';
-  if (method === 'serial' && window.printerSerialPort?.readable) {
-    setPrinterConnectionStatus(true, 'Serial printer terhubung');
-    return;
-  }
-  const cfg = getPrinterConfig();
-  const ready = method === 'serial' ? false : method === 'usb' || Boolean(cfg.printerAddress);
-  const message = method === 'usb' && ready ? 'USB siap melalui driver sistem' : ready ? 'Konfigurasi printer siap' : 'Printer belum terhubung';
-  setPrinterConnectionStatus(ready, message);
-}
-
 function initApp() {
   document.getElementById('cfgSupabaseUrl').value = spUrl;
   document.getElementById('cfgSupabaseKey').value = spKey;
@@ -1165,8 +1058,6 @@ function initApp() {
   document.getElementById('cfgPrinterConnection').value = printerCfg.printerConnection || "usb";
   document.getElementById('cfgPrinterName').value = printerCfg.printerName || "";
   document.getElementById('cfgPrinterAddress').value = printerCfg.printerAddress || "";
-  document.getElementById('cfgPrinterPort').value = printerCfg.printerPort || 9100;
-  document.getElementById('cfgPrinterBaud').value = String(printerCfg.printerBaud || 9600);
   document.getElementById('cfgNamaToko').value = printerCfg.namaToko;
   document.getElementById('cfgAlamatToko').value = printerCfg.alamatToko;
   document.getElementById('cfgLogoUrl').value = printerCfg.logoUrl || "";
@@ -1180,12 +1071,6 @@ function initApp() {
   document.getElementById('cfgShowFooter').checked = printerCfg.showFooter !== false;
   renderBrandLogo();
   updatePrinterPreview();
-  document.getElementById('cfgPrinterConnection').addEventListener('change', updatePrinterConnectionFields);
-  ['cfgPrinterType', 'cfgNamaToko', 'cfgAlamatToko', 'cfgFooterToko'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updatePrinterPreview);
-  });
-  updatePrinterConnectionFields();
-  cekStatusPrinter();
 
   if (spUrl && spKey && window.supabase) {
     try {
@@ -1333,14 +1218,12 @@ function updatePrinterPreview() {
   `;
 }
 
-function simpanSettingPrinter(showAlert = true) {
+function simpanSettingPrinter() {
   const cfg = {
     printerType: document.getElementById('cfgPrinterType').value,
     printerConnection: document.getElementById('cfgPrinterConnection').value,
     printerName: document.getElementById('cfgPrinterName').value.trim(),
     printerAddress: document.getElementById('cfgPrinterAddress').value.trim(),
-    printerPort: parseInt(document.getElementById('cfgPrinterPort').value, 10) || 9100,
-    printerBaud: parseInt(document.getElementById('cfgPrinterBaud').value, 10) || 9600,
     namaToko: document.getElementById('cfgNamaToko').value,
     alamatToko: document.getElementById('cfgAlamatToko').value,
     logoUrl: document.getElementById('cfgLogoUrl').value.trim(),
@@ -1356,8 +1239,7 @@ function simpanSettingPrinter(showAlert = true) {
   localStorage.setItem("arslan_cfg_printer", JSON.stringify(cfg));
   renderBrandLogo();
   updatePrinterPreview();
-  updatePrinterConnectionFields();
-  if (showAlert) alert("Konfigurasi printer POS berhasil disimpan!");
+  alert("Konfigurasi printer POS berhasil disimpan!");
 }
 
 function simpanPinAdmin() {
@@ -1838,18 +1720,12 @@ function renderMasterSummary() {
   const countPelanggan = daftarPelanggan.length;
   const countSales = daftarSales.length;
   const countSupplier = daftarSupplier.length;
-  const summaryElements = {
-    masterPelangganCount: countPelanggan,
-    masterSalesCount: countSales,
-    masterSupplierCount: countSupplier,
-    masterProdukCount: countProduk,
-    masterSupplierCountText: countSupplier,
-    masterSalesCountText: countSales
-  };
-  Object.entries(summaryElements).forEach(([id, value]) => {
-    const element = document.getElementById(id);
-    if (element) element.textContent = value;
-  });
+  document.getElementById('masterPelangganCount')?.textContent = countPelanggan;
+  document.getElementById('masterSalesCount')?.textContent = countSales;
+  document.getElementById('masterSupplierCount')?.textContent = countSupplier;
+  document.getElementById('masterProdukCount')?.textContent = countProduk;
+  document.getElementById('masterSupplierCountText')?.textContent = countSupplier;
+  document.getElementById('masterSalesCountText')?.textContent = countSales;
 }
 
 function bukaModalStokMasuk() {
