@@ -46,6 +46,8 @@
     justify-content:space-between;
     gap:16px;
   }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand__logo{ width:36px; height:36px; border-radius:10px; object-fit:cover; background:var(--rose-soft); border:1px solid rgba(255,255,255,0.18); box-shadow:0 8px 18px rgba(0,0,0,0.15); }
   .brand h1{ font-family:'Fraunces', serif; font-weight:600; font-size:20px; }
   .brand span{ font-size:10px; color:var(--rose-soft); text-transform:uppercase; letter-spacing:1px; }
   
@@ -99,7 +101,13 @@
   .panel-produk{ flex:1.5; padding:16px 20px; overflow-y:auto; }
   .panel-keranjang{
     flex:1; max-width:420px; background:var(--white);
-    border-left:1px solid var(--line); display:flex; flex-direction:column; padding:16px;
+    border:1px solid var(--line); border-radius:22px; display:flex; flex-direction:column; padding:16px;
+    box-shadow:0 18px 38px rgba(43,30,47,.08); margin:16px 18px 16px 0;
+    position:sticky; top:18px; align-self:flex-start;
+  }
+  .checkout-float-shell{
+    padding:10px 0 0; border-top:1px solid var(--line); background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(250,247,245,.98));
+    border-radius:16px; margin-top:8px; position:sticky; bottom:0;
   }
 
   /* TOOLBAR PRODUK */
@@ -194,11 +202,36 @@
   .report-table th, .report-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
   .report-table th { background: #F8F5F3; }
 
+  /* PRINTER CONFIG */
+  .printer-config-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .printer-mode-grid{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .printer-mode-grid label{ display:inline-flex; align-items:center; gap:6px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; font-size:11px; color:var(--plum); }
+  .printer-preview{ background:linear-gradient(180deg,#faf6f3,#fff); border:1px solid var(--line); border-radius:12px; padding:12px; margin-top:14px; }
+  .printer-preview-box{ background:#fff; border:1px dashed var(--line); border-radius:8px; padding:10px; margin-top:8px; }
+  .printer-preview-box.struk-58{ max-width:320px; }
+  .printer-preview-box.struk-80{ max-width:420px; }
+  .printer-rows{ display:flex; justify-content:space-between; font-size:11px; color:var(--plum); }
+  .printer-connection-card{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; margin:0 0 14px; border:1px solid var(--line); border-radius:10px; background:#fbf8f6; }
+  .printer-connection-state{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--plum); }
+  .printer-connection-dot{ width:9px; height:9px; border-radius:50%; background:var(--text-dim); box-shadow:0 0 0 3px rgba(138,124,130,.14); }
+  .printer-connection-dot.online{ background:var(--sage); box-shadow:0 0 0 3px rgba(92,131,104,.16); }
+  .printer-connection-help{ color:var(--text-dim); font-size:10px; line-height:1.45; margin-top:4px; }
+  .printer-action-row{ display:flex; gap:8px; margin-top:10px; }
+  .printer-action-row button{ flex:1; min-height:38px; padding:8px 10px; border:1px solid var(--line); border-radius:7px; cursor:pointer; font-size:12px; font-weight:700; }
+  .printer-action-primary{ background:var(--plum); color:var(--white); border-color:var(--plum) !important; }
+  .printer-action-secondary{ background:var(--white); color:var(--plum); }
+  .brand__logo--fallback{ display:grid; place-items:center; width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,#f4e7e9,#f9d7dd); color:var(--plum); font-weight:800; font-size:18px; }
+  .login-logo__img{ width:52px; height:52px; border-radius:14px; object-fit:cover; background:var(--rose-soft); border:1px solid rgba(255,255,255,0.2); }
+  .login-logo__mark{ width:40px; height:40px; display:grid; place-items:center; border-radius:10px; color:var(--plum); background:var(--rose-soft); font-family:'Inter',sans-serif; font-weight:800; }
+
   /* STRUK PRINT */
-  .struk{ font-family:'Courier New', monospace; font-size:12px; line-height:1.3; }
+  .struk{ font-family:'Courier New', monospace; line-height:1.25; color:#000; background:#fff; }
+  .struk.struk-58{ width:58mm; max-width:100%; font-size:11px; }
+  .struk.struk-80{ width:80mm; max-width:100%; font-size:12px; }
   .struk .judul{ text-align:center; margin-bottom:6px; }
   .struk hr{ border:none; border-top:1px dashed #000; margin:4px 0; }
-  .struk .baris-item{ display:flex; justify-content:space-between; }
+  .struk .baris-item{ display:flex; justify-content:space-between; align-items:flex-start; gap:6px; }
+  .struk .baris-item strong{ font-weight:900; }
   /* UI refinement */
   :root{
     --shadow-soft: 0 8px 24px rgba(43,30,47,.07);
@@ -228,7 +261,8 @@
   header .search-box input::placeholder{ color:#d8cbd6; }
   .main{ height:calc(100vh - 68px); }
   .panel-produk{ padding:24px 28px; }
-  .panel-keranjang{ max-width:430px; padding:20px; box-shadow:-8px 0 24px rgba(43,30,47,.04); }
+  .panel-keranjang{ max-width:430px; padding:20px; box-shadow:0 18px 38px rgba(43,30,47,.08); border-radius:22px; }
+  .checkout-float-shell{ background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(250,247,245,.98)); }
   .toolbar-produk{ margin-bottom:18px; }
   .kategori{ gap:7px; }
   .kategori button{ min-height:34px; padding:7px 14px; }
@@ -316,20 +350,26 @@
 <body>
 
 <section class="public-login" id="publicLogin">
-  <div class="public-login__brand"><div class="login-logo"><span class="login-logo__mark">A</span><span>ARSLAN POS</span></div><div class="public-login__copy"><span class="eyebrow">Point of Sale · Inventory · Insight</span><h1>Jual lebih rapi, tumbuh lebih cepat.</h1><p>Kelola transaksi, stok, pelanggan, dan laporan toko dalam satu ruang kerja yang tenang.</p></div><div class="login-feature-list"><div><strong>24/7</strong>Siap digunakan</div><div><strong>100%</strong>Data tersimpan lokal</div><div><strong>01</strong>Workspace toko</div></div></div>
+  <div class="public-login__brand"><div class="login-logo"><img id="loginLogoImage" class="login-logo__img" alt="ARSLAN POS Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%23F1DDE0'/%3E%3Cpath d='M34 88L58 28h13l24 60h-14l-5-13H53l-5 13H34zm18-25h14l-7-18-7 18z' fill='%232B1E2F'/%3E%3C/svg%3E"/><span id="loginLogoFallback" class="login-logo__mark" style="display:none;">A</span><span>ARSLAN POS</span></div><div class="public-login__copy"><span class="eyebrow">Point of Sale · Inventory · Insight</span><h1>Jual lebih rapi, tumbuh lebih cepat.</h1><p>Kelola transaksi, stok, pelanggan, dan laporan toko dalam satu ruang kerja yang tenang.</p></div><div class="login-feature-list"><div><strong>24/7</strong>Siap digunakan</div><div><strong>100%</strong>Data tersimpan lokal</div><div><strong>01</strong>Workspace toko</div></div></div>
   <div class="public-login__form"><form class="login-card" onsubmit="event.preventDefault(); prosesLoginPublik();"><div class="login-card__top"><span>Selamat datang kembali</span><h2>Masuk ke POS</h2><p>Gunakan akun toko untuk membuka dashboard Anda.</p></div><div class="field"><label for="publicLoginRole">Akses sebagai</label><select id="publicLoginRole" onchange="togglePublicPin()"><option value="admin">Administrator / Owner</option><option value="kasir">Kasir Toko</option></select></div><div class="field" id="publicPinField"><label for="publicLoginPin">PIN keamanan</label><input id="publicLoginPin" type="password" placeholder="Masukkan PIN admin" autocomplete="current-password"></div><button class="login-submit" type="submit">Masuk ke Dashboard &nbsp; →</button><div class="login-hint">Demo akses: Administrator menggunakan PIN <b>1234</b>. Kasir dapat masuk tanpa PIN.</div></form></div>
 </section>
 
 <header>
   <div class="brand">
-    <h1>ARSLAN POS</h1>
-    <span>Kasir & Grosir Cloud</span>
+    <img id="brandLogoImage" class="brand__logo" alt="ARSLAN POS" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%23F1DDE0'/%3E%3Cpath d='M34 88L58 28h13l24 60h-14l-5-13H53l-5 13H34zm18-25h14l-7-18-7 18z' fill='%232B1E2F'/%3E%3C/svg%3E"/>
+    <span id="brandLogoFallback" class="brand__logo--fallback" style="display:none;">A</span>
+    <div>
+      <h1>ARSLAN POS</h1>
+      <span>Kasir & Grosir Cloud</span>
+    </div>
   </div>
   <div class="nav-header">
-    <button id="nav-dashboard" class="active" onclick="pindahTab('dashboard')">⌂ Ringkasan</button>
-    <button id="nav-kasir" class="active" onclick="pindahTab('kasir')">🛒 Kasir</button>
+    <button id="nav-home" class="active" onclick="pindahTab('dashboard')">⌂ Home</button>
+    <button id="nav-kasir" onclick="pindahTab('kasir')">🛒 Kasir</button>
+    <button id="nav-master" onclick="pindahTab('master')">📦 Master Data</button>
     <button id="nav-pelanggan" onclick="pindahTab('pelanggan')">👥 Pelanggan</button>
     <button id="nav-sales" onclick="pindahTab('sales')">👔 Sales</button>
+    <button id="nav-supplier" onclick="pindahTab('supplier')">🏭 Supplier</button>
     <button id="nav-laporan" onclick="pindahTab('laporan')">📊 Laporan & Modal</button>
     <button id="nav-setting" onclick="pindahTab('setting')">⚙️ Setting</button>
     <button class="nav-btn" onclick="openAIModal()">🤖 AI Business Insights</button>
@@ -394,31 +434,32 @@
 
     <div class="list-keranjang" id="listKeranjang"></div>
 
-    <div class="ringkasan">
-      <div class="baris"><span>Total Item</span><span id="totalItemTampil">0 pcs</span></div>
-      <div class="baris"><span>Subtotal</span><span id="subtotalTampil">Rp 0</span></div>
-      
-      <!-- FITUR DISKON TRANSAKSI -->
-      <div class="baris" style="align-items:center;">
-        <span>Diskon</span>
-        <div style="display:flex; gap:4px; max-width:160px;">
-          <select id="inputDiskonTipe" onchange="renderKeranjang()" style="padding:4px; font-size:11px; border-radius:4px; border:1px solid var(--line);">
-            <option value="percent">%</option>
-            <option value="nominal">Rp</option>
-          </select>
-          <input type="number" id="inputDiskonVal" value="0" oninput="renderKeranjang()" style="width:100%; padding:4px; font-size:11px; border-radius:4px; border:1px solid var(--line); text-align:right;">
+    <div class="checkout-float-shell">
+      <div class="ringkasan" style="padding:8px 0 0;">
+        <div class="baris"><span>Total Item</span><span id="totalItemTampil">0 pcs</span></div>
+        <div class="baris"><span>Subtotal</span><span id="subtotalTampil">Rp 0</span></div>
+        
+        <div class="baris" style="align-items:center;">
+          <span>Diskon</span>
+          <div style="display:flex; gap:4px; max-width:160px;">
+            <select id="inputDiskonTipe" onchange="renderKeranjang()" style="padding:4px; font-size:11px; border-radius:4px; border:1px solid var(--line);">
+              <option value="percent">%</option>
+              <option value="nominal">Rp</option>
+            </select>
+            <input type="number" id="inputDiskonVal" value="0" oninput="renderKeranjang()" style="width:100%; padding:4px; font-size:11px; border-radius:4px; border:1px solid var(--line); text-align:right;">
+          </div>
         </div>
+
+        <div class="baris total"><span>Total Bayar</span><span id="totalTampil">Rp 0</span></div>
+
+        <div class="field" style="margin-top:8px; background:#fff; padding:10px; border:1px solid var(--line); border-radius:12px;">
+          <label>Uang Dibayar</label>
+          <input type="number" id="inputBayar" placeholder="0" oninput="hitungKembalian()">
+        </div>
+        <div class="baris" style="margin-top:4px; padding:0 2px;"><span>Kembalian</span><b id="kembalianTampil" style="color:var(--sage);">Rp 0</b></div>
+
+        <button class="btn-bayar" id="btnBayar" disabled onclick="selesaikanTransaksi()">Selesaikan Transaksi</button>
       </div>
-
-      <div class="baris total"><span>Total Bayar</span><span id="totalTampil">Rp 0</span></div>
-
-      <div class="field" style="margin-top:8px;">
-        <label>Uang Dibayar</label>
-        <input type="number" id="inputBayar" placeholder="0" oninput="hitungKembalian()">
-      </div>
-      <div class="baris" style="margin-top:4px;"><span>Kembalian</span><b id="kembalianTampil" style="color:var(--sage);">Rp 0</b></div>
-
-      <button class="btn-bayar" id="btnBayar" disabled onclick="selesaikanTransaksi()">Selesaikan Transaksi</button>
     </div>
   </div>
 </div>
@@ -451,6 +492,55 @@
         <tr><th>ID</th><th>Nama Sales</th><th>No. HP</th><th>Aksi</th></tr>
       </thead>
       <tbody id="tbl-sales-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB MASTER DATA -->
+<div class="main" id="view-master" style="display:none;">
+  <div class="panel-laporan">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap;">
+      <h2 style="font-size:16px;">📦 Master Data Toko</h2>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-simpan" onclick="bukaModalStokMasuk()" style="padding:6px 12px; font-size:12px; width:auto;">+ Stok Masuk Supplier</button>
+        <button class="btn-simpan" onclick="pindahTab('kasir')" style="padding:6px 12px; font-size:12px; width:auto;">Buka Kasir</button>
+      </div>
+    </div>
+    <div class="report-cards" style="margin-bottom:20px;">
+      <button class="report-card" onclick="pindahTab('pelanggan')" style="border:1px solid var(--line); text-align:left; cursor:pointer; background:#fff;">
+        <h4 style="font-size:11px; color:var(--text-dim);">PELANGGAN</h4>
+        <p id="masterPelangganCount" style="font-size:18px; font-weight:700;">0</p>
+      </button>
+      <button class="report-card" onclick="pindahTab('sales')" style="border:1px solid var(--line); text-align:left; cursor:pointer; background:#fff;">
+        <h4 style="font-size:11px; color:var(--text-dim);">SALES</h4>
+        <p id="masterSalesCount" style="font-size:18px; font-weight:700;">0</p>
+      </button>
+      <button class="report-card" onclick="pindahTab('supplier')" style="border:1px solid var(--line); text-align:left; cursor:pointer; background:#fff;">
+        <h4 style="font-size:11px; color:var(--text-dim);">SUPPLIER</h4>
+        <p id="masterSupplierCount" style="font-size:18px; font-weight:700;">0</p>
+      </button>
+    </div>
+    <div class="dashboard-panel">
+      <h3>Ringkasan data</h3>
+      <div class="activity-row"><div><div class="activity-name">Produk aktif</div><div class="activity-meta">Daftar barang yang dijual</div></div><span class="activity-total" id="masterProdukCount">0</span></div>
+      <div class="activity-row"><div><div class="activity-name">Supplier aktif</div><div class="activity-meta">Pemasok stok untuk toko</div></div><span class="activity-total" id="masterSupplierCountText">0</span></div>
+      <div class="activity-row"><div><div class="activity-name">Sales aktif</div><div class="activity-meta">Tim penjualan detail</div></div><span class="activity-total" id="masterSalesCountText">0</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB SUPPLIER -->
+<div class="main" id="view-supplier" style="display:none;">
+  <div class="panel-laporan">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h2 style="font-size:16px;">🏭 Daftar Supplier</h2>
+      <button class="btn-simpan" style="padding:6px 12px; font-size:12px; width:auto;" onclick="bukaModalSupplier()">+ Tambah Supplier</button>
+    </div>
+    <table class="report-table">
+      <thead>
+        <tr><th>ID</th><th>Nama Supplier</th><th>Kontak</th><th>Alamat</th><th>Aksi</th></tr>
+      </thead>
+      <tbody id="tbl-supplier-body"></tbody>
     </table>
   </div>
 </div>
@@ -553,25 +643,138 @@
   </div>
 
   <!-- SETTING PRINTER -->
-  <div style="max-width:550px; background:var(--white); padding:20px; border-radius:10px; border:1px solid var(--line);">
-    <h3 style="margin-bottom:12px; color:var(--plum);">🖨️ Pengaturan Struk Thermal</h3>
-    <div class="field">
-      <label>Nama Toko</label>
-      <input type="text" id="cfgNamaToko" value="ARSLAN POS">
+  <div style="max-width:700px; background:var(--white); padding:20px; border-radius:10px; border:1px solid var(--line);">
+    <h3 style="margin-bottom:12px; color:var(--plum);">🖨️ Pengaturan Printer POS Thermal</h3>
+
+    <div class="printer-connection-card">
+      <div>
+        <div class="printer-connection-state"><span id="printerConnectionDot" class="printer-connection-dot"></span><span id="printerConnectionStatus">Belum terhubung</span></div>
+        <div id="printerConnectionHelp" class="printer-connection-help">Simpan konfigurasi, lalu hubungkan printer dari browser atau gunakan cetak sistem.</div>
+      </div>
+      <button id="btnConnectPrinter" class="printer-action-primary" onclick="hubungkanPrinter()" style="padding:8px 12px; border:0; border-radius:7px; cursor:pointer; font-size:11px; font-weight:700;">Hubungkan</button>
     </div>
-    <div class="field">
-      <label>Alamat / Sub-Header</label>
-      <input type="text" id="cfgAlamatToko" value="Toko Kosmetik & Kecantikan">
+
+    <div class="printer-config-grid">
+      <div class="field">
+        <label>Jenis Printer</label>
+        <select id="cfgPrinterType">
+          <option value="58">POS 58mm</option>
+          <option value="80">POS 80mm</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Metode Koneksi</label>
+        <select id="cfgPrinterConnection">
+          <option value="usb">USB</option>
+          <option value="serial">Serial / COM</option>
+          <option value="bluetooth">Bluetooth</option>
+          <option value="wifi">Wi-Fi / LAN</option>
+          <option value="pos58">POS 58mm Network</option>
+          <option value="pos80">POS 80mm Network</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nama Printer</label>
+        <input type="text" id="cfgPrinterName" placeholder="e.g. Epson TM-T88V">
+      </div>
+      <div class="field">
+        <label>Alamat / IP Printer</label>
+        <input type="text" id="cfgPrinterAddress" placeholder="192.168.1.50 / COM3 / BT-Printer">
+      </div>
+      <div class="field" id="printerPortField">
+        <label>Port Network</label>
+        <input type="number" id="cfgPrinterPort" value="9100" min="1" max="65535" placeholder="9100">
+      </div>
+      <div class="field" id="printerBaudField">
+        <label>Baud Rate Serial</label>
+        <select id="cfgPrinterBaud">
+          <option value="9600">9600</option>
+          <option value="19200">19200</option>
+          <option value="38400">38400</option>
+          <option value="57600">57600</option>
+          <option value="115200">115200</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nama Toko</label>
+        <input type="text" id="cfgNamaToko" value="ARSLAN POS">
+      </div>
+      <div class="field">
+        <label>Alamat / Sub-Header</label>
+        <input type="text" id="cfgAlamatToko" value="Toko Kosmetik & Kecantikan">
+      </div>
+      <div class="field">
+        <label>URL Logo Toko</label>
+        <input type="text" id="cfgLogoUrl" placeholder="https://.../logo.png">
+      </div>
+      <div class="field">
+        <label>Upload Logo Lokal</label>
+        <input type="file" id="cfgLogoUpload" accept="image/*" onchange="handleLogoUpload(event)">
+      </div>
+      <div class="field" style="grid-column:1 / -1;">
+        <label>Preview Logo</label>
+        <div style="display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--line); border-radius:8px; background:#fff;">
+          <img id="printerLogoPreview" src="" alt="Logo toko" style="width:52px;height:52px;border-radius:12px;object-fit:cover;display:none;border:1px solid var(--line);">
+          <span id="printerLogoPreviewText" style="font-size:11px; color:var(--text-dim);">Belum ada logo</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Lebar Kertas</label>
+        <select id="cfgPaperWidth">
+          <option value="58">58 mm</option>
+          <option value="80">80 mm</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Ukuran Font</label>
+        <select id="cfgFontScale">
+          <option value="1">Standar</option>
+          <option value="1.2">Sedang</option>
+          <option value="1.5">Besar</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Mode Cetak</label>
+        <select id="cfgPrintMode">
+          <option value="thermal">Thermal POS</option>
+          <option value="plain">Plain Text</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:1 / -1;">
+        <label>Pesan Footer Struk</label>
+        <input type="text" id="cfgFooterToko" value="Terima kasih telah berbelanja! 💄">
+      </div>
     </div>
-    <div class="field">
-      <label>URL Logo Toko (Link Gambar)</label>
-      <input type="text" id="cfgLogoUrl" placeholder="https://.../logo.png">
+
+    <div class="printer-mode-grid">
+      <label><input type="checkbox" id="cfgAutoCut" checked> Auto Cut</label>
+      <label><input type="checkbox" id="cfgOpenCashDrawer" checked> Open Cash Drawer</label>
+      <label><input type="checkbox" id="cfgShowLogo" checked> Tampilkan Logo</label>
+      <label><input type="checkbox" id="cfgShowFooter" checked> Tampilkan Footer</label>
     </div>
-    <div class="field">
-      <label>Pesan Footer Struk</label>
-      <input type="text" id="cfgFooterToko" value="Terima kasih telah berbelanja! 💄">
+
+    <div class="printer-action-row">
+      <button class="printer-action-secondary" onclick="simpanSettingPrinter(false)">Simpan Konfigurasi</button>
+      <button class="printer-action-secondary" onclick="cekStatusPrinter()">Cek Status</button>
     </div>
-    <button class="btn-simpan" onclick="simpanSettingPrinter()" style="width:100%; padding:9px; border:none; border-radius:6px; cursor:pointer;">💾 Simpan Struk Printer</button>
+
+    <div class="printer-preview">
+      <strong style="font-size:12px; color:var(--plum);">Preview Desain Struk</strong>
+      <div id="printerPreviewBox" class="printer-preview-box struk-58">
+        <div class="printer-rows"><strong>ARSLAN POS</strong></div>
+        <div class="printer-rows"><span>Jl. Mawar No. 12</span></div>
+        <hr>
+        <div class="printer-rows"><span>Produk A x2</span><span>Rp 120.000</span></div>
+        <div class="printer-rows"><span>Produk B x1</span><span>Rp 90.000</span></div>
+        <hr>
+        <div class="printer-rows"><strong>Total</strong><strong>Rp 210.000</strong></div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button class="btn-simpan" onclick="simpanSettingPrinter(false)" style="flex:1; padding:9px; border:none; border-radius:6px; cursor:pointer;">💾 Simpan Konfigurasi Printer</button>
+      <button class="btn-batal" onclick="testPrintPos()" style="flex:1; padding:9px; border:1px solid var(--line); border-radius:6px; cursor:pointer;">🧪 Test Print</button>
+    </div>
   </div>
 
   <!-- SETTING PIN ADMIN -->
@@ -643,6 +846,7 @@
     <div class="field"><label>Kode Barcode</label><input type="text" id="inputKodeProduk"></div>
     <div class="field"><label>Nama Produk</label><input type="text" id="inputNamaProduk"></div>
     <div class="field"><label>Kategori</label><input type="text" id="inputKategoriProduk"></div>
+    <div class="field"><label>Supplier</label><select id="inputSupplierProduk"><option value="">Pilih Supplier</option></select></div>
     <div class="field"><label>Harga Modal (Rp)</label><input type="number" id="inputHargaModal" value="0"></div>
     <div style="display:flex; gap:8px;">
       <div class="field" style="flex:1;"><label>Harga Eceran (Rp)</label><input type="number" id="inputHargaEceran" value="0"></div>
@@ -685,6 +889,40 @@
     <div class="aksi-modal">
       <button class="btn-batal" onclick="document.getElementById('overlaySales').classList.remove('tampil')">Batal</button>
       <button class="btn-simpan" onclick="simpanSales()">Simpan Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SUPPLIER -->
+<div class="overlay" id="overlaySupplier">
+  <div class="kotak-modal">
+    <h3 style="margin-bottom:12px;">Tambah Supplier</h3>
+    <input type="hidden" id="idSupplierEdit">
+    <div class="field"><label>Nama Supplier</label><input type="text" id="inputNamaSupplier"></div>
+    <div class="field"><label>Kontak / HP</label><input type="text" id="inputHpSupplier"></div>
+    <div class="field"><label>Alamat</label><input type="text" id="inputAlamatSupplier"></div>
+    <div class="aksi-modal">
+      <button class="btn-batal" onclick="document.getElementById('overlaySupplier').classList.remove('tampil')">Batal</button>
+      <button class="btn-simpan" onclick="simpanSupplier()">Simpan Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL STOK MASUK SUPPLIER -->
+<div class="overlay" id="overlayStokMasuk">
+  <div class="kotak-modal">
+    <h3 style="margin-bottom:12px;">Tambah Stok Masuk Supplier</h3>
+    <div class="field"><label>Supplier</label><select id="inputStokSupplier"></select></div>
+    <div class="field"><label>Produk</label><select id="inputStokProdukId"></select></div>
+    <div style="display:flex; gap:8px;">
+      <div class="field" style="flex:1;"><label>Qty</label><input type="number" id="inputStokQty" value="1" min="1"></div>
+      <div class="field" style="flex:1;"><label>Harga Beli / Unit</label><input type="number" id="inputStokHargaBeli" value="0"></div>
+    </div>
+    <div class="field"><label>Tanggal</label><input type="date" id="inputStokTanggal" value=""></div>
+    <div class="field"><label>Catatan</label><input type="text" id="inputStokCatatan" placeholder="Contoh: Pembelian paket promo"></div>
+    <div class="aksi-modal">
+      <button class="btn-batal" onclick="document.getElementById('overlayStokMasuk').classList.remove('tampil')">Batal</button>
+      <button class="btn-simpan" onclick="simpanStokMasuk()">Simpan Stok</button>
     </div>
   </div>
 </div>
@@ -748,23 +986,206 @@ let daftarSales = JSON.parse(localStorage.getItem("arslan_sales")) || [
   {id: 1, nama: "Tanpa Sales", hp: "-"},
   {id: 2, nama: "Andi Sales", hp: "08987654321"}
 ];
+let daftarSupplier = JSON.parse(localStorage.getItem("arslan_supplier")) || [
+  {id: 1, nama: "PT Beauty Supply Indonesia", hp: "08123400123", alamat: "Jakarta Barat"},
+  {id: 2, nama: "CV Mutiara Kosmetik", hp: "08234567890", alamat: "Bandung"}
+];
 
 let saldoAwalTahun = JSON.parse(localStorage.getItem("arslan_saldo_awal")) || { "2025": 50000000, "2026": 75000000 };
+let daftarPembelian = JSON.parse(localStorage.getItem("arslan_pembelian")) || [];
 
 let keranjang = [];
 let kategoriAktif = "Semua";
 let modePenjualan = "eceran";
+
+function getPrinterConfig() {
+  const defaults = {
+    printerType: "58",
+    printerConnection: "usb",
+    printerName: "",
+    printerAddress: "",
+    printerPort: 9100,
+    printerBaud: 9600,
+    namaToko: "ARSLAN POS",
+    alamatToko: "Toko Kosmetik & Kecantikan",
+    logoUrl: "",
+    footer: "Terima kasih telah berbelanja! 💄",
+    paperWidth: "58",
+    fontScale: 1,
+    printMode: "thermal",
+    autoCut: true,
+    openCashDrawer: true,
+    showLogo: true,
+    showFooter: true
+  };
+
+  const saved = JSON.parse(localStorage.getItem("arslan_cfg_printer")) || {};
+  return { ...defaults, ...saved };
+}
+
+function renderBrandLogo() {
+  const cfg = getPrinterConfig();
+  const logoUrl = cfg.logoUrl || "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%23F1DDE0'/%3E%3Cpath d='M34 88L58 28h13l24 60h-14l-5-13H53l-5 13H34zm18-25h14l-7-18-7 18z' fill='%232B1E2F'/%3E%3C/svg%3E";
+  const loginImg = document.getElementById('loginLogoImage');
+  const brandImg = document.getElementById('brandLogoImage');
+  const printerLogoPreview = document.getElementById('printerLogoPreview');
+  const previewText = document.getElementById('printerLogoPreviewText');
+
+  if (loginImg) {
+    loginImg.src = logoUrl;
+    loginImg.style.display = 'block';
+  }
+  if (brandImg) {
+    brandImg.src = logoUrl;
+    brandImg.style.display = 'block';
+  }
+  if (printerLogoPreview) {
+    printerLogoPreview.src = logoUrl;
+    printerLogoPreview.style.display = 'block';
+  }
+  if (previewText) {
+    previewText.textContent = cfg.logoUrl ? 'Logo aktif siap dipakai' : 'Belum ada logo';
+  }
+
+  const loginFallback = document.getElementById('loginLogoFallback');
+  const brandFallback = document.getElementById('brandLogoFallback');
+  if (loginFallback) loginFallback.style.display = 'none';
+  if (brandFallback) brandFallback.style.display = 'none';
+}
+
+function handleLogoUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const result = e.target.result;
+    const logoInput = document.getElementById('cfgLogoUrl');
+    if (logoInput) logoInput.value = result;
+    renderBrandLogo();
+    updatePrinterPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function testPrintPos() {
+  const dummyTx = {
+    waktu: new Date().toLocaleString('id-ID'),
+    pelanggan: 'Pelanggan Test',
+    sales: 'Sales Test',
+    subtotal: 245000,
+    diskon: 15000,
+    grandTotal: 230000,
+    bayar: 250000,
+    kembalian: 20000,
+    items: [
+      { nama: 'Lipstik Matte Rose', qty: 2, hargaPakai: 45000 },
+      { nama: 'Bedak Padat Natural', qty: 1, hargaPakai: 65000 }
+    ]
+  };
+  tampilkanStruk(dummyTx);
+}
+
+function setPrinterConnectionStatus(online, message) {
+  const dot = document.getElementById('printerConnectionDot');
+  const status = document.getElementById('printerConnectionStatus');
+  const help = document.getElementById('printerConnectionHelp');
+  const button = document.getElementById('btnConnectPrinter');
+  if (dot) dot.classList.toggle('online', online);
+  if (status) status.textContent = message;
+  if (help) help.textContent = online ? 'Printer siap digunakan untuk test print atau cetak struk.' : 'Simpan konfigurasi, lalu hubungkan printer dari browser atau gunakan cetak sistem.';
+  if (button) button.textContent = online ? 'Putuskan' : 'Hubungkan';
+}
+
+function updatePrinterConnectionFields() {
+  const method = document.getElementById('cfgPrinterConnection')?.value || 'usb';
+  const portField = document.getElementById('printerPortField');
+  const baudField = document.getElementById('printerBaudField');
+  if (portField) portField.style.display = ['wifi', 'pos58', 'pos80'].includes(method) ? 'block' : 'none';
+  if (baudField) baudField.style.display = method === 'serial' ? 'block' : 'none';
+}
+
+async function hubungkanPrinter() {
+  const method = document.getElementById('cfgPrinterConnection')?.value || 'usb';
+  simpanSettingPrinter(false);
+  const cfg = getPrinterConfig();
+  if (document.getElementById('btnConnectPrinter')?.textContent === 'Putuskan') {
+    if (window.printerSerialPort) {
+      try { await window.printerSerialPort.close(); } catch (error) { console.warn(error); }
+      window.printerSerialPort = null;
+    }
+    setPrinterConnectionStatus(false, 'Printer diputuskan');
+    return;
+  }
+
+  if (method === 'serial') {
+    if (!('serial' in navigator)) {
+      setPrinterConnectionStatus(false, 'Web Serial tidak didukung');
+      return alert('Browser ini belum mendukung Web Serial. Gunakan Chrome atau Edge melalui HTTPS/localhost.');
+    }
+    try {
+      const port = await navigator.serial.requestPort();
+      await port.open({ baudRate: Number(cfg.printerBaud) || 9600 });
+      window.printerSerialPort = port;
+      setPrinterConnectionStatus(true, 'Serial printer terhubung');
+    } catch (error) {
+      setPrinterConnectionStatus(false, 'Gagal menghubungkan printer');
+      if (error.name !== 'NotFoundError') alert('Printer serial tidak dapat dihubungkan.');
+    }
+    return;
+  }
+
+  if (['wifi', 'pos58', 'pos80'].includes(method) && !cfg.printerAddress) {
+    setPrinterConnectionStatus(false, 'Alamat printer belum diisi');
+    return alert('Isi alamat/IP printer terlebih dahulu.');
+  }
+
+  setPrinterConnectionStatus(true, method === 'usb' ? 'USB siap melalui driver sistem' : 'Konfigurasi printer siap');
+}
+
+function cekStatusPrinter() {
+  const method = document.getElementById('cfgPrinterConnection')?.value || 'usb';
+  if (method === 'serial' && window.printerSerialPort?.readable) {
+    setPrinterConnectionStatus(true, 'Serial printer terhubung');
+    return;
+  }
+  const cfg = getPrinterConfig();
+  const ready = method === 'serial' ? false : method === 'usb' || Boolean(cfg.printerAddress);
+  const message = method === 'usb' && ready ? 'USB siap melalui driver sistem' : ready ? 'Konfigurasi printer siap' : 'Printer belum terhubung';
+  setPrinterConnectionStatus(ready, message);
+}
 
 function initApp() {
   document.getElementById('cfgSupabaseUrl').value = spUrl;
   document.getElementById('cfgSupabaseKey').value = spKey;
   document.getElementById('cfgPinAdmin').value = pinAdmin;
 
-  const printerCfg = JSON.parse(localStorage.getItem("arslan_cfg_printer")) || { namaToko:"ARSLAN POS", alamatToko:"Toko Kosmetik & Kecantikan", logoUrl:"", footer:"Terima kasih telah berbelanja! 💄" };
+  const printerCfg = getPrinterConfig();
+  document.getElementById('cfgPrinterType').value = printerCfg.printerType || "58";
+  document.getElementById('cfgPrinterConnection').value = printerCfg.printerConnection || "usb";
+  document.getElementById('cfgPrinterName').value = printerCfg.printerName || "";
+  document.getElementById('cfgPrinterAddress').value = printerCfg.printerAddress || "";
+  document.getElementById('cfgPrinterPort').value = printerCfg.printerPort || 9100;
+  document.getElementById('cfgPrinterBaud').value = String(printerCfg.printerBaud || 9600);
   document.getElementById('cfgNamaToko').value = printerCfg.namaToko;
   document.getElementById('cfgAlamatToko').value = printerCfg.alamatToko;
   document.getElementById('cfgLogoUrl').value = printerCfg.logoUrl || "";
   document.getElementById('cfgFooterToko').value = printerCfg.footer;
+  document.getElementById('cfgPaperWidth').value = printerCfg.paperWidth || "58";
+  document.getElementById('cfgFontScale').value = String(printerCfg.fontScale || 1);
+  document.getElementById('cfgPrintMode').value = printerCfg.printMode || "thermal";
+  document.getElementById('cfgAutoCut').checked = printerCfg.autoCut !== false;
+  document.getElementById('cfgOpenCashDrawer').checked = printerCfg.openCashDrawer !== false;
+  document.getElementById('cfgShowLogo').checked = printerCfg.showLogo !== false;
+  document.getElementById('cfgShowFooter').checked = printerCfg.showFooter !== false;
+  renderBrandLogo();
+  updatePrinterPreview();
+  document.getElementById('cfgPrinterConnection').addEventListener('change', updatePrinterConnectionFields);
+  ['cfgPrinterType', 'cfgNamaToko', 'cfgAlamatToko', 'cfgFooterToko'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updatePrinterPreview);
+  });
+  updatePrinterConnectionFields();
+  cekStatusPrinter();
 
   if (spUrl && spKey && window.supabase) {
     try {
@@ -783,9 +1204,21 @@ function initApp() {
 function renderDropdownPelangganSales() {
   const selP = document.getElementById('selectPelanggan');
   const selS = document.getElementById('selectSales');
+  const selSup = document.getElementById('inputSupplierProduk');
+  const selStokSupplier = document.getElementById('inputStokSupplier');
+  const selStokProdukId = document.getElementById('inputStokProdukId');
   
   selP.innerHTML = daftarPelanggan.map(p => `<option value="${p.id}">${p.nama}</option>`).join('');
   selS.innerHTML = daftarSales.map(s => `<option value="${s.id}">${s.nama}</option>`).join('');
+  if (selSup) {
+    selSup.innerHTML = '<option value="">Pilih Supplier</option>' + daftarSupplier.map(s => `<option value="${s.id}">${s.nama}</option>`).join('');
+  }
+  if (selStokSupplier) {
+    selStokSupplier.innerHTML = '<option value="">Pilih Supplier</option>' + daftarSupplier.map(s => `<option value="${s.id}">${s.nama}</option>`).join('');
+  }
+  if (selStokProdukId) {
+    selStokProdukId.innerHTML = '<option value="">Pilih Produk</option>' + produk.map(p => `<option value="${p.id}">${p.nama}</option>`).join('');
+  }
 }
 
 function bukaModalLogin() {
@@ -861,6 +1294,9 @@ function updateAksesUser() {
   document.getElementById('roleUserLogin').innerText = userLogin.role.toUpperCase();
 
   const isAdmin = userLogin.role === 'admin';
+  document.getElementById('nav-home').style.display = 'inline-block';
+  document.getElementById('nav-kasir').style.display = 'inline-block';
+  document.getElementById('nav-master').style.display = 'inline-block';
   document.getElementById('nav-laporan').style.display = isAdmin ? 'inline-block' : 'none';
   document.getElementById('nav-setting').style.display = isAdmin ? 'inline-block' : 'none';
   document.getElementById('btnTambahProdukBaru').style.display = isAdmin ? 'inline-block' : 'none';
@@ -868,6 +1304,7 @@ function updateAksesUser() {
   if (!isAdmin) pindahTab('kasir');
   renderProduk();
   renderDashboard();
+  renderMasterSummary();
 }
 
 async function simpanKoneksiSupabase() {
@@ -879,15 +1316,48 @@ async function simpanKoneksiSupabase() {
   location.reload();
 }
 
-function simpanSettingPrinter() {
+function updatePrinterPreview() {
+  const type = document.getElementById('cfgPrinterType')?.value || '58';
+  const box = document.getElementById('printerPreviewBox');
+  if (!box) return;
+
+  box.className = 'printer-preview-box struk-' + type;
+  box.innerHTML = `
+    <div class="printer-rows"><strong>${document.getElementById('cfgNamaToko').value || 'ARSLAN POS'}</strong></div>
+    <div class="printer-rows"><span>${document.getElementById('cfgAlamatToko').value || 'Alamat Toko'}</span></div>
+    <hr>
+    <div class="printer-rows"><span>Produk A x2</span><span>Rp 120.000</span></div>
+    <div class="printer-rows"><span>Produk B x1</span><span>Rp 90.000</span></div>
+    <hr>
+    <div class="printer-rows"><strong>Total</strong><strong>Rp 210.000</strong></div>
+  `;
+}
+
+function simpanSettingPrinter(showAlert = true) {
   const cfg = {
+    printerType: document.getElementById('cfgPrinterType').value,
+    printerConnection: document.getElementById('cfgPrinterConnection').value,
+    printerName: document.getElementById('cfgPrinterName').value.trim(),
+    printerAddress: document.getElementById('cfgPrinterAddress').value.trim(),
+    printerPort: parseInt(document.getElementById('cfgPrinterPort').value, 10) || 9100,
+    printerBaud: parseInt(document.getElementById('cfgPrinterBaud').value, 10) || 9600,
     namaToko: document.getElementById('cfgNamaToko').value,
     alamatToko: document.getElementById('cfgAlamatToko').value,
     logoUrl: document.getElementById('cfgLogoUrl').value.trim(),
-    footer: document.getElementById('cfgFooterToko').value
+    footer: document.getElementById('cfgFooterToko').value,
+    paperWidth: document.getElementById('cfgPaperWidth').value,
+    fontScale: parseFloat(document.getElementById('cfgFontScale').value) || 1,
+    printMode: document.getElementById('cfgPrintMode').value,
+    autoCut: document.getElementById('cfgAutoCut').checked,
+    openCashDrawer: document.getElementById('cfgOpenCashDrawer').checked,
+    showLogo: document.getElementById('cfgShowLogo').checked,
+    showFooter: document.getElementById('cfgShowFooter').checked
   };
   localStorage.setItem("arslan_cfg_printer", JSON.stringify(cfg));
-  alert("Pengaturan Struk Printer disimpan!");
+  renderBrandLogo();
+  updatePrinterPreview();
+  updatePrinterConnectionFields();
+  if (showAlert) alert("Konfigurasi printer POS berhasil disimpan!");
 }
 
 function simpanPinAdmin() {
@@ -1123,31 +1593,40 @@ async function selesaikanTransaksi(){
 }
 
 function tampilkanStruk(trx){
-  const cfg = JSON.parse(localStorage.getItem("arslan_cfg_printer")) || { namaToko:"ARSLAN POS", alamatToko:"Toko Kosmetik", logoUrl:"", footer:"Terima kasih 💄" };
+  const cfg = getPrinterConfig();
+  const paperSize = cfg.paperWidth === '80' || cfg.printerType === '80' ? '80' : '58';
+  const scale = Number(cfg.fontScale) || 1;
   let rows = "";
   trx.items.forEach(i => {
     rows += `<div class="baris-item"><span>${i.nama} (${i.qty}x)</span><span>${rupiah(i.hargaPakai * i.qty)}</span></div>`;
   });
 
-  const imgLogo = cfg.logoUrl ? `<div style="text-align:center;"><img src="${cfg.logoUrl}" style="max-width:100px; max-height:60px; margin-bottom:4px;"></div>` : '';
+  const imgLogo = (cfg.showLogo !== false && cfg.logoUrl) ? `<div style="text-align:center;"><img src="${cfg.logoUrl}" style="max-width:100px; max-height:60px; margin-bottom:4px;"></div>` : '';
+  const footerText = cfg.showFooter !== false ? `<div style="text-align:center; margin-top:8px; font-size:11px;">${cfg.footer || 'Terima kasih'}</div>` : '';
+  const cutText = cfg.autoCut ? '<div style="text-align:center; margin-top:8px;">........................</div>' : '';
 
-  document.getElementById('isiStruk').innerHTML = `
+  const isiStruk = document.getElementById('isiStruk');
+  isiStruk.className = 'struk struk-' + paperSize;
+  isiStruk.style.fontSize = (11 * scale) + 'px';
+  isiStruk.innerHTML = `
     ${imgLogo}
     <div class="judul"><b>${cfg.namaToko}</b><br><small>${cfg.alamatToko}</small></div>
     <div style="font-size:10px; margin-top:4px;">
       Waktu: ${trx.waktu}<br>
       Pelanggan: ${trx.pelanggan}<br>
-      Sales: ${trx.sales}
+      Sales: ${trx.sales}<br>
+      Printer: ${cfg.printerName || (cfg.printerType === '80' ? 'POS 80mm' : 'POS 58mm')}
     </div>
     <hr>
     ${rows}
     <hr>
     <div class="baris-item"><span>Subtotal</span><span>${rupiah(trx.subtotal)}</span></div>
     ${trx.diskon > 0 ? `<div class="baris-item"><span>Diskon</span><span>-${rupiah(trx.diskon)}</span></div>` : ''}
-    <div class="baris-item"><b>TOTAL</b><b>${rupiah(trx.grandTotal)}</b></div>
+    <div class="baris-item"><strong>TOTAL</strong><strong>${rupiah(trx.grandTotal)}</strong></div>
     <div class="baris-item"><span>Bayar</span><span>${rupiah(trx.bayar)}</span></div>
     <div class="baris-item"><span>Kembali</span><span>${rupiah(trx.kembalian)}</span></div>
-    <div style="text-align:center; margin-top:8px; font-size:11px;">${cfg.footer}</div>
+    ${cutText}
+    ${footerText}
   `;
   document.getElementById('overlayStruk').classList.add('tampil');
 }
@@ -1222,6 +1701,7 @@ async function simpanProduk(){
     kode: document.getElementById('inputKodeProduk').value,
     nama: nama,
     kategori: document.getElementById('inputKategoriProduk').value || "Umum",
+    supplierId: document.getElementById('inputSupplierProduk').value || "",
     hargaModal: parseInt(document.getElementById('inputHargaModal').value) || 0,
     hargaEceran: hargaEceran,
     hargaGrosir: parseInt(document.getElementById('inputHargaGrosir').value) || hargaEceran,
@@ -1353,6 +1833,120 @@ function renderSales() {
   `).join('');
 }
 
+function renderMasterSummary() {
+  const countProduk = produk.length;
+  const countPelanggan = daftarPelanggan.length;
+  const countSales = daftarSales.length;
+  const countSupplier = daftarSupplier.length;
+  document.getElementById('masterPelangganCount')?.textContent = countPelanggan;
+  document.getElementById('masterSalesCount')?.textContent = countSales;
+  document.getElementById('masterSupplierCount')?.textContent = countSupplier;
+  document.getElementById('masterProdukCount')?.textContent = countProduk;
+  document.getElementById('masterSupplierCountText')?.textContent = countSupplier;
+  document.getElementById('masterSalesCountText')?.textContent = countSales;
+}
+
+function bukaModalStokMasuk() {
+  renderDropdownPelangganSales();
+  document.getElementById('inputStokSupplier').value = "";
+  document.getElementById('inputStokProdukId').value = "";
+  document.getElementById('inputStokQty').value = 1;
+  document.getElementById('inputStokHargaBeli').value = 0;
+  document.getElementById('inputStokTanggal').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('inputStokCatatan').value = "";
+  document.getElementById('overlayStokMasuk').classList.add('tampil');
+}
+
+function simpanStokMasuk() {
+  const supplierId = document.getElementById('inputStokSupplier').value;
+  const produkId = document.getElementById('inputStokProdukId').value;
+  const qty = parseInt(document.getElementById('inputStokQty').value) || 0;
+  const hargaBeli = parseInt(document.getElementById('inputStokHargaBeli').value) || 0;
+  const tanggal = document.getElementById('inputStokTanggal').value || new Date().toISOString().slice(0, 10);
+  const catatan = document.getElementById('inputStokCatatan').value.trim();
+
+  if (!supplierId || !produkId || qty <= 0) {
+    return alert('Supplier, produk, dan qty stok harus diisi.');
+  }
+
+  const item = produk.find(p => p.id === Number(produkId));
+  if (!item) return alert('Produk tidak ditemukan.');
+
+  item.stok = (Number(item.stok) || 0) + qty;
+  item.hargaModal = hargaBeli > 0 ? hargaBeli : (Number(item.hargaModal) || 0);
+
+  const supplier = daftarSupplier.find(s => s.id === Number(supplierId));
+  daftarPembelian.push({
+    id: Date.now(),
+    supplierId: Number(supplierId),
+    supplierNama: supplier ? supplier.nama : 'Supplier',
+    produkId: Number(produkId),
+    produkNama: item.nama,
+    qty,
+    hargaBeli,
+    tanggal,
+    catatan,
+    timestamp: Date.now()
+  });
+
+  localStorage.setItem('arslan_produk', JSON.stringify(produk));
+  localStorage.setItem('arslan_pembelian', JSON.stringify(daftarPembelian));
+  document.getElementById('overlayStokMasuk').classList.remove('tampil');
+  renderProduk();
+  renderMasterSummary();
+  alert('Stok masuk berhasil ditambah ke produk.');
+}
+
+function bukaModalSupplier() {
+  document.getElementById('idSupplierEdit').value = "";
+  document.getElementById('inputNamaSupplier').value = "";
+  document.getElementById('inputHpSupplier').value = "";
+  document.getElementById('inputAlamatSupplier').value = "";
+  document.getElementById('overlaySupplier').classList.add('tampil');
+}
+
+function simpanSupplier() {
+  const nama = document.getElementById('inputNamaSupplier').value.trim();
+  if(!nama) return alert("Nama supplier wajib diisi!");
+
+  const supplier = {
+    id: Date.now(),
+    nama: nama,
+    hp: document.getElementById('inputHpSupplier').value.trim() || "-",
+    alamat: document.getElementById('inputAlamatSupplier').value.trim() || "-"
+  };
+
+  daftarSupplier.push(supplier);
+  localStorage.setItem("arslan_supplier", JSON.stringify(daftarSupplier));
+  document.getElementById('overlaySupplier').classList.remove('tampil');
+  renderDropdownPelangganSales();
+  renderSupplier();
+  renderMasterSummary();
+}
+
+function hapusSupplier(id) {
+  if(!confirm("Hapus supplier ini?")) return;
+  daftarSupplier = daftarSupplier.filter(s => s.id !== id);
+  localStorage.setItem("arslan_supplier", JSON.stringify(daftarSupplier));
+  renderDropdownPelangganSales();
+  renderSupplier();
+  renderMasterSummary();
+}
+
+function renderSupplier() {
+  const tbody = document.getElementById('tbl-supplier-body');
+  if (!tbody) return;
+  tbody.innerHTML = daftarSupplier.map(s => `
+    <tr>
+      <td>${s.id}</td>
+      <td><b>${s.nama}</b></td>
+      <td>${s.hp}</td>
+      <td>${s.alamat}</td>
+      <td><button onclick="hapusSupplier(${s.id})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Hapus</button></td>
+    </tr>
+  `).join('');
+}
+
 /* MANAJEMEN SALDO AWAL & MODAL TAHUNAN */
 function bukaModalSaldoAwal() {
   const currentYear = new Date().getFullYear();
@@ -1376,22 +1970,28 @@ function simpanSaldoAwal() {
 function pindahTab(t) {
   document.getElementById('view-dashboard').style.display = t === 'dashboard' ? 'flex' : 'none';
   document.getElementById('view-kasir').style.display = t === 'kasir' ? 'flex' : 'none';
+  document.getElementById('view-master').style.display = t === 'master' ? 'flex' : 'none';
   document.getElementById('view-pelanggan').style.display = t === 'pelanggan' ? 'flex' : 'none';
   document.getElementById('view-sales').style.display = t === 'sales' ? 'flex' : 'none';
+  document.getElementById('view-supplier').style.display = t === 'supplier' ? 'flex' : 'none';
   document.getElementById('view-laporan').style.display = t === 'laporan' ? 'flex' : 'none';
   document.getElementById('view-setting').style.display = t === 'setting' ? 'flex' : 'none';
   
-  document.getElementById('nav-dashboard').className = t === 'dashboard' ? 'active' : '';
+  document.getElementById('nav-home').className = t === 'dashboard' ? 'active' : '';
   document.getElementById('nav-kasir').className = t === 'kasir' ? 'active' : '';
+  document.getElementById('nav-master').className = t === 'master' ? 'active' : '';
   document.getElementById('nav-pelanggan').className = t === 'pelanggan' ? 'active' : '';
   document.getElementById('nav-sales').className = t === 'sales' ? 'active' : '';
+  document.getElementById('nav-supplier').className = t === 'supplier' ? 'active' : '';
   document.getElementById('nav-laporan').className = t === 'laporan' ? 'active' : '';
   document.getElementById('nav-setting').className = t === 'setting' ? 'active' : '';
   
   if(t === 'pelanggan') renderPelanggan();
   if(t === 'sales') renderSales();
+  if(t === 'supplier') renderSupplier();
   if(t === 'laporan') renderLaporan();
   if(t === 'dashboard') renderDashboard();
+  if(t === 'master') renderMasterSummary();
 }
 
 let reportChartOmset = null;
