@@ -1797,22 +1797,65 @@ function exportKeExcel() {
 }
 
 function importDariExcel(event) {
-  const file = event.target.files[0];
+  const input = event.target;
+  const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = async function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, {type: 'array'});
-    const sheetName = workbook.SheetNames[0];
-    const excelData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-    
-    if(excelData && excelData.length > 0) {
-      produk = excelData;
-      localStorage.setItem("arslan_produk", JSON.stringify(produk));
-      if(supabaseClient) await supabaseClient.from('produk').upsert(produk);
-      alert("Berhasil mengimpor " + excelData.length + " produk!");
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const sheetName = workbook.SheetNames[0];
+      const excelData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+      let idBerikutnya = produk.reduce((tertinggi, item) => Math.max(tertinggi, Number(item.id) || 0), 0) + 1;
+      const idTerpakai = new Set();
+      const dataImport = excelData.map(row => {
+        const kolom = Object.fromEntries(Object.entries(row).map(([key, value]) => [key.trim().toLowerCase().replace(/[\\s_-]/g, ''), value]));
+        let id = Number(kolom.id);
+        if (!Number.isInteger(id) || id <= 0 || idTerpakai.has(id)) {
+          while (idTerpakai.has(idBerikutnya) || produk.some(item => Number(item.id) === idBerikutnya)) idBerikutnya++;
+          id = idBerikutnya++;
+        }
+        idTerpakai.add(id);
+        const hargaEceran = Number(kolom.hargaeceran || kolom.harga) || 0;
+        return {
+          id,
+          kode: String(kolom.kode || '').trim(),
+          nama: String(kolom.nama || '').trim(),
+          kategori: String(kolom.kategori || 'Umum').trim(),
+          supplierId: String(kolom.supplierid || '').trim(),
+          hargaModal: Number(kolom.hargamodal) || 0,
+          hargaEceran,
+          hargaGrosir: Number(kolom.hargagrosir) || hargaEceran,
+          minGrosir: Number(kolom.mingrosir) || 6,
+          stok: Number(kolom.stok) || 0,
+          warna: String(kolom.warna || '#B76E79')
+        };
+      }).filter(item => item.nama && item.hargaEceran > 0);
+
+      if (!dataImport.length) return alert('Tidak ada baris produk valid. Pastikan kolom nama dan hargaEceran terisi.');
+      if (supabaseClient) {
+        const { error } = await supabaseClient.from('produk').upsert(dataImport, { onConflict: 'id' });
+        if (error) {
+          console.error('Gagal menyimpan impor produk ke Supabase:', error);
+          return alert('Impor gagal disimpan ke Supabase: ' + error.message + '. Data lokal tidak diubah.');
+        }
+      }
+
+      produk = dataImport;
+      localStorage.setItem('arslan_produk', JSON.stringify(produk));
+      renderDropdownPelangganSales();
       renderKategori();
       renderProduk();
+      renderMasterSummary();
+      alert(supabaseClient
+        ? 'Berhasil mengimpor ' + dataImport.length + ' produk dan menyimpannya ke Supabase.'
+        : 'Berhasil mengimpor ' + dataImport.length + ' produk ke browser ini. Supabase belum terhubung.');
+    } catch (error) {
+      console.error('Gagal membaca file impor:', error);
+      alert('File Excel gagal dibaca: ' + error.message);
+    } finally {
+      input.value = '';
     }
   };
   reader.readAsArrayBuffer(file);
@@ -1850,7 +1893,7 @@ function bukaModalEdit(id){
 }
 
 async function simpanProduk(){
-  const nama = document.getElementById('inputNamaProduk').value;
+  const nama = document.getElementById('inputNamaProduk').value.trim();
   const hargaEceran = parseInt(document.getElementById('inputHargaEceran').value) || 0;
   if(!nama || hargaEceran <= 0) return alert("Nama & Harga Eceran wajib diisi!");
 
@@ -1870,12 +1913,26 @@ async function simpanProduk(){
   const idEdit = document.getElementById('idProdukEdit').value;
   if(idEdit) {
     const p = produk.find(pr => pr.id === parseInt(idEdit));
+    if (!p) return alert('Produk yang akan diedit tidak ditemukan. Muat ulang data lalu coba lagi.');
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('produk').update(itemData).eq('id', p.id);
+      if (error) return alert('Produk gagal diperbarui di Supabase: ' + error.message);
+    }
     Object.assign(p, itemData);
-    if(supabaseClient) await supabaseClient.from('produk').update(itemData).eq('id', p.id);
   } else {
-    itemData.id = produk.length ? Math.max(...produk.map(p => p.id)) + 1 : 1;
+    const idLokalTertinggi = produk.reduce((tertinggi, item) => Math.max(tertinggi, Number(item.id) || 0), 0);
+    let idTertinggi = idLokalTertinggi;
+    if (supabaseClient) {
+      const { data, error } = await supabaseClient.from('produk').select('id');
+      if (error) return alert('Tidak bisa memeriksa ID produk di Supabase: ' + error.message);
+      idTertinggi = (data || []).reduce((tertinggi, item) => Math.max(tertinggi, Number(item.id) || 0), idTertinggi);
+    }
+    itemData.id = idTertinggi + 1;
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('produk').insert([itemData]);
+      if (error) return alert('Produk gagal disimpan ke Supabase: ' + error.message + '. Daftar lokal tidak diubah.');
+    }
     produk.push(itemData);
-    if(supabaseClient) await supabaseClient.from('produk').insert([itemData]);
   }
 
   localStorage.setItem("arslan_produk", JSON.stringify(produk));
