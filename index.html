@@ -1011,6 +1011,7 @@ const PRODUK_DEFAULT = [
 ];
 
 let produk = JSON.parse(localStorage.getItem("arslan_produk")) || PRODUK_DEFAULT;
+let kolomProdukSupabase = new Set();
 let daftarPelanggan = JSON.parse(localStorage.getItem("arslan_pelanggan")) || [
   {id: 1, nama: "Umum / Non-Member", hp: "-", alamat: "-"},
   {id: 2, nama: "Budi Santoso", hp: "08123456789", alamat: "Jakarta"}
@@ -1519,11 +1520,58 @@ function simpanPinAdmin() {
   alert("PIN Admin berhasil diubah!");
 }
 
+function produkDariRowSupabase(row) {
+  kolomProdukSupabase = new Set(Object.keys(row));
+  return {
+    id: String(row.id),
+    kode: row.barcode ?? row.kode ?? '',
+    nama: row.nama || '',
+    kategori: row.kategori || 'Umum',
+    supplierId: String(row.supplier ?? row.supplierId ?? ''),
+    hargaModal: Number(row.harga_beli ?? row.hargaModal) || 0,
+    hargaEceran: Number(row.harga_jual ?? row.hargaEceran ?? row.harga) || 0,
+    hargaGrosir: Number(row.harga_grosir ?? row.hargaGrosir) || 0,
+    minGrosir: Number(row.min_grosir ?? row.minGrosir) || 6,
+    stok: Number(row.stok) || 0,
+    stokMinimal: Number(row.stok_minimal ?? row.stokMinimal) || 0,
+    satuan: row.satuan || 'pcs',
+    warna: row.warna || '#B76E79'
+  };
+}
+
+function produkKeRowSupabase(item) {
+  const gunakanKolom = (snakeCase, camelCase) => kolomProdukSupabase.has(snakeCase) || !kolomProdukSupabase.has(camelCase) ? snakeCase : camelCase;
+  const row = {
+    id: String(item.id),
+    [gunakanKolom('barcode', 'kode')]: item.kode || '',
+    nama: item.nama || '',
+    kategori: item.kategori || 'Umum',
+    [gunakanKolom('harga_beli', 'hargaModal')]: Number(item.hargaModal) || 0,
+    [gunakanKolom('harga_jual', 'hargaEceran')]: Number(item.hargaEceran || item.harga) || 0,
+    [gunakanKolom('harga_grosir', 'hargaGrosir')]: Number(item.hargaGrosir || item.hargaEceran) || 0,
+    [gunakanKolom('min_grosir', 'minGrosir')]: Number(item.minGrosir) || 6,
+    stok: Number(item.stok) || 0
+  };
+  if (kolomProdukSupabase.has('supplier')) row.supplier = String(item.supplierId || '');
+  else if (kolomProdukSupabase.has('supplierId')) row.supplierId = String(item.supplierId || '');
+  if (kolomProdukSupabase.has('stok_minimal')) row.stok_minimal = Number(item.stokMinimal) || 0;
+  else if (kolomProdukSupabase.has('stokMinimal')) row.stokMinimal = Number(item.stokMinimal) || 0;
+  if (kolomProdukSupabase.has('satuan')) row.satuan = item.satuan || 'pcs';
+  if (kolomProdukSupabase.has('warna')) row.warna = item.warna || '#B76E79';
+  return row;
+}
+
+function buatIdProduk() {
+  return window.crypto?.randomUUID
+    ? window.crypto.randomUUID()
+    : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+}
+
 async function muatDataDariSupabase() {
   if (!supabaseClient) return;
   const { data, error } = await supabaseClient.from('produk').select('*');
   if (!error && data) {
-    produk = data;
+    produk = data.map(produkDariRowSupabase);
     localStorage.setItem("arslan_produk", JSON.stringify(produk));
     renderKategori();
     renderProduk();
@@ -1573,7 +1621,6 @@ function renderProduk(){
     const kartu = document.createElement('div');
     kartu.className = "kartu-produk" + (habis ? " habis" : "");
     kartu.innerHTML = `
-      ${userLogin.role === 'admin' ? `<button class="btn-edit-produk" onclick="event.stopPropagation(); bukaModalEdit(${p.id})">✎</button>` : ''}
       <div class="warna" style="background:${p.warna || '#B76E79'}"></div>
       <div class="nama">${p.nama}</div>
       <div class="stok">${habis ? "Stok Habis" : "Stok: " + p.stok}</div>
@@ -1582,6 +1629,17 @@ function renderProduk(){
         <div class="harga-grosir">Grosir: ${rupiah(p.hargaGrosir || p.hargaEceran)} (≥${p.minGrosir||6})</div>
       </div>
     `;
+    if (userLogin.role === 'admin') {
+      const tombolEdit = document.createElement('button');
+      tombolEdit.className = 'btn-edit-produk';
+      tombolEdit.title = 'Edit produk';
+      tombolEdit.textContent = '✎';
+      tombolEdit.onclick = event => {
+        event.stopPropagation();
+        bukaModalEdit(p.id);
+      };
+      kartu.appendChild(tombolEdit);
+    }
     if(!habis) kartu.onclick = () => tambahKeKeranjang(p);
     wadah.appendChild(kartu);
   });
@@ -1599,9 +1657,9 @@ function tambahKeKeranjang(p){
 }
 
 function ubahQty(id, delta){
-  const item = keranjang.find(i => i.id === id);
+  const item = keranjang.find(i => String(i.id) === String(id));
   if(!item) return;
-  const p = produk.find(pr => pr.id === id);
+  const p = produk.find(pr => String(pr.id) === String(id));
   if(item.qty + delta <= 0) keranjang = keranjang.filter(i => i.id !== id);
   else if(item.qty + delta > p.stok) alert("Stok melampaui batas!");
   else item.qty += delta;
@@ -1653,9 +1711,9 @@ function renderKeranjang(){
           <div class="hg">${rupiah(hargaPakai)} x ${item.qty}</div>
         </div>
         <div class="qty-ctrl">
-          <button onclick="ubahQty(${item.id}, -1)">−</button>
+          <button onclick="ubahQty('${item.id}', -1)">−</button>
           <span>${item.qty}</span>
-          <button onclick="ubahQty(${item.id}, 1)">+</button>
+          <button onclick="ubahQty('${item.id}', 1)">+</button>
         </div>
         <div style="font-size:12px; font-weight:700; min-width:65px; text-align:right;">${rupiah(subtotal)}</div>
       </div>
@@ -1807,35 +1865,34 @@ function importDariExcel(event) {
       const workbook = XLSX.read(data, {type: 'array'});
       const sheetName = workbook.SheetNames[0];
       const excelData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-      let idBerikutnya = produk.reduce((tertinggi, item) => Math.max(tertinggi, Number(item.id) || 0), 0) + 1;
       const idTerpakai = new Set();
       const dataImport = excelData.map(row => {
         const kolom = Object.fromEntries(Object.entries(row).map(([key, value]) => [key.trim().toLowerCase().replace(/[\\s_-]/g, ''), value]));
-        let id = Number(kolom.id);
-        if (!Number.isInteger(id) || id <= 0 || idTerpakai.has(id)) {
-          while (idTerpakai.has(idBerikutnya) || produk.some(item => Number(item.id) === idBerikutnya)) idBerikutnya++;
-          id = idBerikutnya++;
-        }
+        let id = String(kolom.id || '').trim();
+        if (!id || idTerpakai.has(id)) id = buatIdProduk();
+        while (idTerpakai.has(id)) id = buatIdProduk();
         idTerpakai.add(id);
-        const hargaEceran = Number(kolom.hargaeceran || kolom.harga) || 0;
+        const hargaEceran = Number(kolom.hargajual || kolom.hargaeceran || kolom.harga) || 0;
         return {
           id,
-          kode: String(kolom.kode || '').trim(),
+          kode: String(kolom.barcode || kolom.kode || '').trim(),
           nama: String(kolom.nama || '').trim(),
           kategori: String(kolom.kategori || 'Umum').trim(),
-          supplierId: String(kolom.supplierid || '').trim(),
-          hargaModal: Number(kolom.hargamodal) || 0,
+          supplierId: String(kolom.supplierid || kolom.supplier || '').trim(),
+          hargaModal: Number(kolom.hargabeli || kolom.hargamodal) || 0,
           hargaEceran,
           hargaGrosir: Number(kolom.hargagrosir) || hargaEceran,
           minGrosir: Number(kolom.mingrosir) || 6,
           stok: Number(kolom.stok) || 0,
+          stokMinimal: Number(kolom.stokminimal) || 0,
+          satuan: String(kolom.satuan || 'pcs'),
           warna: String(kolom.warna || '#B76E79')
         };
       }).filter(item => item.nama && item.hargaEceran > 0);
 
       if (!dataImport.length) return alert('Tidak ada baris produk valid. Pastikan kolom nama dan hargaEceran terisi.');
       if (supabaseClient) {
-        const { error } = await supabaseClient.from('produk').upsert(dataImport, { onConflict: 'id' });
+        const { error } = await supabaseClient.from('produk').upsert(dataImport.map(produkKeRowSupabase), { onConflict: 'id' });
         if (error) {
           console.error('Gagal menyimpan impor produk ke Supabase:', error);
           return alert('Impor gagal disimpan ke Supabase: ' + error.message + '. Data lokal tidak diubah.');
@@ -1877,7 +1934,7 @@ function bukaModalTambah(){
 }
 
 function bukaModalEdit(id){
-  const p = produk.find(pr => pr.id === id);
+  const p = produk.find(pr => String(pr.id) === String(id));
   if(!p) return;
   document.getElementById('idProdukEdit').value = p.id;
   document.getElementById('inputKodeProduk').value = p.kode || "";
@@ -1912,24 +1969,17 @@ async function simpanProduk(){
 
   const idEdit = document.getElementById('idProdukEdit').value;
   if(idEdit) {
-    const p = produk.find(pr => pr.id === parseInt(idEdit));
+    const p = produk.find(pr => String(pr.id) === String(idEdit));
     if (!p) return alert('Produk yang akan diedit tidak ditemukan. Muat ulang data lalu coba lagi.');
     if (supabaseClient) {
-      const { error } = await supabaseClient.from('produk').update(itemData).eq('id', p.id);
+      const { error } = await supabaseClient.from('produk').update(produkKeRowSupabase({ ...p, ...itemData })).eq('id', p.id);
       if (error) return alert('Produk gagal diperbarui di Supabase: ' + error.message);
     }
     Object.assign(p, itemData);
   } else {
-    const idLokalTertinggi = produk.reduce((tertinggi, item) => Math.max(tertinggi, Number(item.id) || 0), 0);
-    let idTertinggi = idLokalTertinggi;
+    itemData.id = buatIdProduk();
     if (supabaseClient) {
-      const { data, error } = await supabaseClient.from('produk').select('id');
-      if (error) return alert('Tidak bisa memeriksa ID produk di Supabase: ' + error.message);
-      idTertinggi = (data || []).reduce((tertinggi, item) => Math.max(tertinggi, Number(item.id) || 0), idTertinggi);
-    }
-    itemData.id = idTertinggi + 1;
-    if (supabaseClient) {
-      const { error } = await supabaseClient.from('produk').insert([itemData]);
+      const { error } = await supabaseClient.from('produk').insert([produkKeRowSupabase(itemData)]);
       if (error) return alert('Produk gagal disimpan ke Supabase: ' + error.message + '. Daftar lokal tidak diubah.');
     }
     produk.push(itemData);
@@ -1946,9 +1996,12 @@ async function simpanProduk(){
 async function hapusProduk() {
   const idEdit = document.getElementById('idProdukEdit').value;
   if (!idEdit || !confirm("Yakin ingin menghapus produk ini?")) return;
-  
-  produk = produk.filter(p => p.id !== parseInt(idEdit));
-  if (supabaseClient) await supabaseClient.from('produk').delete().eq('id', parseInt(idEdit));
+
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from('produk').delete().eq('id', idEdit);
+    if (error) return alert('Produk gagal dihapus di Supabase: ' + error.message);
+  }
+  produk = produk.filter(p => String(p.id) !== String(idEdit));
   
   localStorage.setItem("arslan_produk", JSON.stringify(produk));
   document.getElementById('overlayProduk').classList.remove('tampil');
@@ -1959,10 +2012,13 @@ async function hapusProduk() {
 }
 
 async function hapusProdukLangsung(id) {
-  const item = produk.find(p => Number(p.id) === Number(id));
+  const item = produk.find(p => String(p.id) === String(id));
   if (!item || !confirm('Yakin ingin menghapus item "' + item.nama + '"?')) return;
-  produk = produk.filter(p => Number(p.id) !== Number(id));
-  if (supabaseClient) await supabaseClient.from('produk').delete().eq('id', Number(id));
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from('produk').delete().eq('id', id);
+    if (error) return alert('Produk gagal dihapus di Supabase: ' + error.message);
+  }
+  produk = produk.filter(p => String(p.id) !== String(id));
   localStorage.setItem('arslan_produk', JSON.stringify(produk));
   renderDropdownPelangganSales();
   renderKategori();
@@ -2171,7 +2227,7 @@ async function simpanStokMasuk() {
     return alert('Supplier, produk, dan qty stok harus diisi.');
   }
 
-  const item = produk.find(p => p.id === Number(produkId));
+  const item = produk.find(p => String(p.id) === String(produkId));
   if (!item) return alert('Produk tidak ditemukan.');
 
   const supplier = daftarSupplier.find(s => s.id === Number(supplierId));
@@ -2182,7 +2238,8 @@ async function simpanStokMasuk() {
   if (supabaseClient) {
     const errorMutasi = await simpanMutasiStokKeSupabase(mutasi);
     if (errorMutasi) return alert('Riwayat stok masuk gagal disimpan ke Supabase: ' + errorMutasi.message + '. Pastikan tabel mutasi_stok dan izinnya sudah dibuat.');
-    const { error } = await supabaseClient.from('produk').update({ stok: stokBaru, hargaModal: hargaModalBaru }).eq('id', item.id);
+    const kolomHargaBeli = kolomProdukSupabase.has('harga_beli') || !kolomProdukSupabase.has('hargaModal') ? 'harga_beli' : 'hargaModal';
+    const { error } = await supabaseClient.from('produk').update({ stok: stokBaru, [kolomHargaBeli]: hargaModalBaru }).eq('id', item.id);
     if (error) {
       await supabaseClient.from('mutasi_stok').delete().eq('id', mutasi.id);
       return alert('Stok gagal diperbarui di Supabase: ' + error.message);
@@ -2196,7 +2253,7 @@ async function simpanStokMasuk() {
     id: timestamp,
     supplierId: Number(supplierId),
     supplierNama: supplier ? supplier.nama : 'Supplier',
-    produkId: Number(produkId),
+    produkId: String(item.id),
     produkNama: item.nama,
     qty,
     hargaBeli,
@@ -2225,11 +2282,11 @@ function bukaModalStokKeluar() {
 }
 
 async function simpanStokKeluar() {
-  const produkId = Number(document.getElementById('inputKeluarProdukId').value);
+  const produkId = document.getElementById('inputKeluarProdukId').value;
   const qty = Number.parseInt(document.getElementById('inputKeluarQty').value, 10) || 0;
   const tanggal = document.getElementById('inputKeluarTanggal').value || new Date().toISOString().slice(0, 10);
   const catatan = document.getElementById('inputKeluarCatatan').value.trim();
-  const item = produk.find(p => Number(p.id) === produkId);
+  const item = produk.find(p => String(p.id) === String(produkId));
   if (!item || qty <= 0) return alert('Pilih produk dan isi qty keluar lebih dari 0.');
   if (qty > Number(item.stok || 0)) return alert('Qty keluar melebihi stok yang tersedia.');
 
